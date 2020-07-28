@@ -52,16 +52,16 @@
             <div class="col-md-6 col-lg-4 col-xl-3">
               <div class="card text-center card-product">
                 <div class="card-product__img">
-                  <img class="card-img" src="media/{{item.img}}" alt="">
+                  <img class="card-img" src="https://source.unsplash.com/200x200/?machine,electronics" alt="">
                   <ul class="card-product__imgOverlay">
-                    <li><button><i class="ti-search"></i></button></li>
+                    <li><a href="/{{item.product_id}}"><button><i class="fa fa-eye" aria-hidden="true"></i></button></a></li>
                     <li><button><i class="ti-shopping-cart"></i></button></li>
                     <li><button><i class="ti-heart"></i></button></li>
                   </ul>
                 </div>
                 <div class="card-body">
                   <p>{{item.category}}</p>
-                  <h4 class="card-product__title"><a href="single-product.html">{{item.product_name}}</a></h4>
+                  <h4 class="card-product__title"><a href="/{{item.product_id}}">{{item.product_name}}</a></h4>
                   <p class="card-product__price">Rs{{item.price}}</p>
                 </div>
               </div>
@@ -83,7 +83,7 @@
           {% for product in first4 %}
             <div class="card text-center card-product">
               <div class="card-product__img">
-                <img class="img-fluid" src="media/{{product.img}}" alt="">
+                <img class="img-fluid" src="https://source.unsplash.com/200x200/?farmer,irrigation" alt="">
                 <ul class="card-product__imgOverlay">
                   <li><button><i class="ti-search"></i></button></li>
                   <li><button><i class="ti-shopping-cart"></i></button></li>

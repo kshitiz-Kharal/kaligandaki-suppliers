@@ -16,6 +16,7 @@ def index(request):
     first8 = Product.objects.all()[0:8]
     categoryProds = Product.objects.values('category', 'product_id')
     category = {item['category'] for item in categoryProds}
+    print(category)
     for cat in category:
         obj = Product.objects.filter(category=cat)
         n = len(obj)
@@ -29,6 +30,20 @@ def index(request):
     }
     return render(request, 'shop/index.html', context)
 
+def shop(request):
+    allProds = []
+    categoryProds = Product.objects.values('category')
+    category = {item['category'] for item in categoryProds}
+    for cat in category:
+        products = Product.objects.filter(category=cat)
+        length = len(products)
+        allProds.append([products, n, range(1, length)])
+    context = {
+        "category": category,
+        "allProds":allProds
+    }
+    return render(request, 'shop/category.html', context)
+
 def searchMatch(query, item):
     ''' Returntrue only if query matches the item '''
     if query in item.description.lower() or query in item.product_name.lower() or query in item.category.lower() or query in item.subcategory.lower():
@@ -37,7 +52,6 @@ def searchMatch(query, item):
         return False
 
 def search(request):
-    print('search')
     query = request.GET.get('query')
     query = query.lower()
     allProds = []
@@ -62,13 +76,13 @@ def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        desc = request.POST.get('message')
-        contacts = Contact(name=name, email=email, phone=phone, message=desc)
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        contacts = Contact(name=name, email=email, subject=subject, message=message)
         contacts.save()
         messages.success(request, 'Your Message has been submitted succesfully')
         redirect('/contact')
-    return render(request, 'home/contact.html')
+    return render(request, 'shop/contact.html')
 
 def about(request):
     return render(request, 'home/about.html')
@@ -77,56 +91,50 @@ def handleSignup(request):
     if request.method == 'POST':
         fname = request.POST.get('fname')
         lname = request.POST.get('lname')
-        email = request.POST.get('signupemail')
+        email = request.POST.get('email')
         pass1 = request.POST.get('pass1')
         pass2 = request.POST.get('pass2')
-        phone = request.POST.get('phone')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        state = request.POST.get('state')
         special_chars = """~,.?{()}`/#@!&*%_-='"<>:;"""
-    if len(fname)<3 or len(lname)<3 or len(email)<13 or len(pass1)<8 or len(address)<5 or len(city)<2 or len(phone)<10:
-        messages.error(request, 'Please enter valid details')
+        if len(fname)<3 or len(lname)<3 or len(email)<13 or len(pass1)<8:
+            messages.error(request, 'Please enter valid details')
 
 
-    if pass1 == pass2:
-        count = 0
-        upper = 0
-        for characters in pass1:
-            if characters in special_chars:
-                count = count + 1
-        if characters.isupper():
-            upper = upper + 1
-        if upper == 0:
-            messages.warning(request, 'At least one character in passsword must be in Uppercase')
-        if count == 0:
-            messages.warning(request, 'Your password most be with special characters')
-        # ----------------Check if the user already exist----------------------------#
-        try:
-            # ----------------Try creating the user----------------------------#
-            myuser = User.objects.create_user(email, email, pass1)
-            myuser.first_name = fname
-            myuser.last_name = lname
-            myuser.save()
-            messages.success(request, 'Your Shopping Account has been created successfully')
-            return redirect( '/')
+        if pass1 == pass2:
+            count = 0
+            upper = 0
+            for characters in pass1:
+                if characters in special_chars:
+                    count = count + 1
+            if characters.isupper():
+                upper = upper + 1
+            if upper == 0:
+                messages.warning(request, 'At least one character in passsword must be in Uppercase')
+            if count == 0:
+                messages.warning(request, 'Your password most be with special characters')
+            # ----------------Check if the user already exist----------------------------#
+            try:
+                # ----------------Try creating the user----------------------------#
+                myuser = User.objects.create_user(email, email, pass1)
+                myuser.first_name = fname
+                myuser.last_name = lname
+                myuser.save()
+                messages.success(request, 'Your Shopping Account has been created successfully')
+                return redirect( '/')
+                
+            except Exception as e:
+                messages.warning(request, 'Your account already exists with this email address')
             
-        except Exception as e:
-            messages.warning(request, 'Your account already exists with this email address')
-        
-    else:
-        messages.error(request, 'Passwords do not match')
-        return redirect('/')
+        else:
+            messages.error(request, 'Passwords do not match')
+            return redirect('/')
 
-    return HttpResponse('404-page not found')
+    return render(request, 'shop/register.html')
 
 def handleLogin(request):
     if request.method == 'POST':
         username = request.POST.get('loginemail')
         password = request.POST.get('loginpass')
-        print(username, password)
         user = authenticate(username=username, password=password)
-        print(user)
         if user is not None:
             login(request, user)
             messages.success(request, 'Loged in successfully')
@@ -134,7 +142,7 @@ def handleLogin(request):
         else:
             messages.error(request, 'Invalid credencials.Please try again')
             return redirect( '/')
-    return HttpResponse('404-page not found')
+    return render(request, 'shop/login.html')
 
 def handleLogout(request):
     logout(request)
@@ -142,7 +150,11 @@ def handleLogout(request):
 
 def prodView(request, product_id):
     post = Product.objects.filter(product_id=product_id).first()
-    return render(request, 'home/prodView.html', {'post':post})
+    context = {
+        'post':post,
+        "category":post.category
+    }
+    return render(request, 'shop/single-product.html', context)
 
 def checkout(request):
     if request.method == "POST":
