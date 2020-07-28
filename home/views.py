@@ -11,6 +11,9 @@ import json
 
 def index(request):
     allProds = []
+    first3 = Product.objects.all()[0:3]
+    first4 = Product.objects.all()[0:4]
+    first8 = Product.objects.all()[0:8]
     categoryProds = Product.objects.values('category', 'product_id')
     category = {item['category'] for item in categoryProds}
     for cat in category:
@@ -20,8 +23,11 @@ def index(request):
         allProds.append([obj, range(1, nSlides)])
     context = {
         "allProds":allProds,
+        "first3":first3,
+        "first8":first8,
+        "first4":first4,
     }
-    return render(request, 'home/index.html', context)
+    return render(request, 'shop/index.html', context)
 
 def searchMatch(query, item):
     ''' Returntrue only if query matches the item '''
