@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
   <link rel="stylesheet" href="{% static 'home/vendors/linericon/style.css' %} ">
     {% block costomcss %}
-  {% endblock costomcss %}
+    {% endblock costomcss %}
     <style>
         .s-btn, .m-btn{
           display:none;
@@ -111,7 +111,7 @@
               <!--================ Search button for large devices =================-->
               <li class="nav-item"><button class='m-btn' type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="ti-search"></i></button></li>
               <!--================ Search button for large devices end =================-->
-              <li class="nav-item"><button><i class="ti-shopping-cart"></i><span class="nav-shop__circle">3</span></button> </li>
+              <li class="nav-item"><button><a href="/cart"><i class="ti-shopping-cart"></i></a><span class="nav-shop__circle" id="cart">0</span></button> </li>
             </ul>
           </div>
         </div>
@@ -219,7 +219,32 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
   <script src="{% static 'home/vendors/jquery.ajaxchimp.min.js' %}"></script>
   <script src="{% static 'home/vendors/mail-script.js' %}"></script>
   <script src="{% static 'home/js/main.js' %}"></script>
-  {% block costomjs %}
-  {% endblock costomjs %}
+    {% comment %} <script>
+    // Find Out the items from localStorage
+     console.log('working');
+    if(localStorage.getItem('cart') == null){
+    var cart = {};
+    }
+    else
+    {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    document.getElementById('cart').innerHTML = Object.keys(cart).length;
+    }
+    $('.cart').click(function(){
+    var idstr = this.id.toString();
+    if (cart[idstr] !=undefined){
+    cart[idstr] = cart[idstr] + 1;
+    }
+    else
+    {
+    cart[idstr] = 1;
+    }
+    console.log(cart);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = Object.keys(cart).length;
+    });
+    </script> {% endcomment %}
+  {% block js %}
+  {% endblock js %}
 </body>
 </html>

@@ -115,7 +115,7 @@ def handleSignup(request):
             messages.error(request, 'Passwords do not match')
             return redirect('/')
 
-    return render(request, 'shop/register.html')
+    return render(request, 'shop/signup.html')
 
 def handleLogin(request):
     if request.method == 'POST':
@@ -141,7 +141,10 @@ def prodView(request, product_id):
         'post':post,
         "category":post.category
     }
-    return render(request, 'shop/single-product.html', context)
+    return render(request, 'shop/product.html', context)
+
+def cart(request):
+    return render(request, 'shop/cart.html')
 
 def checkout(request):
     if request.method == "POST":
@@ -150,8 +153,8 @@ def checkout(request):
         amount = request.POST.get('amount', '')
         email = request.POST.get('email', '')
         phone = request.POST.get('phone', '')
-        address = request.POST.get('address', '')
-        address2 = request.POST.get('address2', '')
+        address = request.POST.get('add1', '')
+        address2 = request.POST.get('add2', '')
         city = request.POST.get('city', '')
         state = request.POST.get('state', '')
         zip_code = request.POST.get('zip_code', '')
@@ -161,8 +164,8 @@ def checkout(request):
         update.save()
         thank = True
         id = order.order_id
-        return render(request, 'home/checkout.html', {'thank': thank, 'id': id})
-    return render(request, 'home/checkout.html')
+        return render(request, 'shop/checkout.html', {'thank': thank, 'id': id})
+    return render(request, 'shop/checkout.html')
 
 def tracker(request):
     if request.method=="POST":
@@ -182,4 +185,4 @@ def tracker(request):
         except Exception as e:
             return HttpResponse('{"status": "error"}')
 
-    return render(request, 'home/tracker.html')
+    return render(request, 'shop/tracker.html')

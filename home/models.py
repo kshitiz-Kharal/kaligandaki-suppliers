@@ -43,7 +43,7 @@ class Order(models.Model):
     zip_code = models.CharField(max_length=5)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} by {self.email}"
 
 
 class OrderUpdate(models.Model):

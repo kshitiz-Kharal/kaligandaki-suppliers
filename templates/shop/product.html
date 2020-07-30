@@ -1,4 +1,5 @@
 {% extends 'shop/base.html' %}
+{% block title %}{{post.product_name}}{% endblock title %}
 {% block body %}
 {% load static %}
 
@@ -18,7 +19,7 @@
 			<div class="col-lg-5 offset-lg-1">
 				<div class="s_product_text">
 					<h3>{{post.product_name}}</h3>
-					<h2>Rs{{post.price}}</h2>
+					<h2>Rs.{{post.price}}</h2>
 					<ul class="list">
 						<li><a class="active" href="#"><span>Category</span> : {{post.category}}</a></li>
 						<li><a href="#"><span>Availibility</span> : In Stock</a></li>
@@ -310,7 +311,7 @@
 							<div class="review_item">
 								<div class="media">
 									<div class="d-flex">
-										<img src="img/product/review-3.png" alt="">
+										<img src="{% static 'home/img/product/review-3.png' %} " alt="">
 									</div>
 									<div class="media-body">
 										<h4>Blake Ruiz</h4>
