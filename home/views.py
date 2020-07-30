@@ -14,16 +14,7 @@ def index(request):
     first3 = Product.objects.all()[0:3]
     first4 = Product.objects.all()[0:4]
     first8 = Product.objects.all()[0:8]
-    categoryProds = Product.objects.values('category', 'product_id')
-    category = {item['category'] for item in categoryProds}
-    print(category)
-    for cat in category:
-        obj = Product.objects.filter(category=cat)
-        n = len(obj)
-        nSlides = n//4 + ceil(n/4 - n//4)
-        allProds.append([obj, range(1, nSlides)])
     context = {
-        "allProds":allProds,
         "first3":first3,
         "first8":first8,
         "first4":first4,
@@ -31,46 +22,42 @@ def index(request):
     return render(request, 'shop/index.html', context)
 
 def shop(request):
-    allProds = []
     categoryProds = Product.objects.values('category')
     category = {item['category'] for item in categoryProds}
-    for cat in category:
-        products = Product.objects.filter(category=cat)
-        length = len(products)
-        allProds.append([products, n, range(1, length)])
+    allProds = Product.objects.all()
     context = {
         "category": category,
         "allProds":allProds
     }
-    return render(request, 'shop/category.html', context)
+    return render(request, 'shop/shop.html', context)
 
 def searchMatch(query, item):
-    ''' Returntrue only if query matches the item '''
+    print(query, item)
+    ''' Return true only if query matches the item '''
     if query in item.description.lower() or query in item.product_name.lower() or query in item.category.lower() or query in item.subcategory.lower():
+        print('true')
         return True
     else:
+        print('false')
         return False
 
 def search(request):
     query = request.GET.get('query')
     query = query.lower()
     allProds = []
-    categoryProds = Product.objects.values('category', 'product_id')
+    categoryProds = Product.objects.values('category')
     category = {item['category'] for item in categoryProds}
-    for cat in category:
-        prodtemp = Product.objects.filter(category=cat)
-        print(prodtemp)
-        prods = [item for item in prodtemp if searchMatch(query, item)]
-        print(prods)
-        n = len(prods)
-        nSlides = n//4 + ceil(n/4 - n//4)
-        if len(prods) != 0:
-            allProds.append([prods, range(1, nSlides)])
-    params = {'allProds': allProds}
+    allProds = Product.objects.all()
+    prods = [item for item in allProds if searchMatch(query, item)]
+    if len(prods) != 0:
+        context = {
+            "category":category,
+            "prods":prods,
+        }
+    return render(request, 'shop/search.html', context)
     if len(allProds) == 0 or len(query) <3 :
         params = {'msg': 'please enter valid value'}
-    return render(request, 'home/search.html', params)
-    # return HttpResponse('working')
+    return render(request, 'shop/search.html')
 
 def contact(request):
     if request.method == 'POST':

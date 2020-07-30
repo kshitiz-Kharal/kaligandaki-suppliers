@@ -1,10 +1,19 @@
 {% extends 'shop/base.html' %}
-{% block body %}
 {% load static %}
+{% block title %}Search{% endblock title %}
   {% block costomcss %}
-  <link rel="stylesheet" href="{% static 'vendors/nouislider/nouislider.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/vendors/nouislider/nouislider.min.css' %}">
   {% endblock costomcss %}
-
+{% block css %}
+.S-inp{
+    margin: -4px;
+}
+.S-btn{
+    margin-left: 0px;
+    padding: 5.5px;
+}
+{% endblock css %}
+{% block body %}
 
 
 	<!-- ================ category section start ================= -->		  
@@ -32,10 +41,10 @@
           <div class="filter-bar d-flex flex-wrap align-items-center">
             <div>
               <div class="input-group filter-bar-search">
-                <input type="text" placeholder="Search">
-                <div class="input-group-append">
-                  <button type="button"><i class="ti-search"></i></button>
-                </div>
+                <form action="/search">
+                    <input type="text" class="S-inp" id="query" name="query" placeholder="Search">
+                    <button class="S-btn" type="submit"><i class="ti-search"></i></button>
+                </form>
               </div>
             </div>
           </div>
@@ -43,26 +52,25 @@
           <!-- Start Best Seller -->
           <section class="lattest-product-area pb-40 category-list">
             <div class="row">
-            {% for obj, n, cat in allProds %}
-              {% for item in obj|slice:"1:2" %}
-              <div class="col-md-6 col-lg-4">
-                <div class="card text-center card-product">
-                  <div class="card-product__img">
-                    <img class="card-img" src="img/product/product1.png" alt="">
-                    <ul class="card-product__imgOverlay">
-                      <li><button><i class="ti-search"></i></button></li>
-                      <li><button><i class="ti-shopping-cart"></i></button></li>
-                      <li><button><i class="ti-heart"></i></button></li>
-                    </ul>
-                  </div>
-                  <div class="card-body">
-                    <p>Accessories</p>
-                    <h4 class="card-product__title"><a href="#">Quartz Belt Watch</a></h4>
-                    <p class="card-product__price">$150.00</p>
+              {% for items in prods %}
+                <div class="col-md-6 col-lg-4">
+                  <div class="card text-center card-product">
+                    <div class="card-product__img">
+                      <img class="card-img" src="media/{{items.img}}" alt="">
+                      <ul class="card-product__imgOverlay">
+                        <li><a href="/{{items.product_id}}"><button><i class="fa fa-eye" aria-hidden="true"></i></button></a></li>
+                        <li><button><i class="ti-shopping-cart"></i></button></li>
+                        <li><button><i class="ti-heart"></i></button></li>
+                      </ul>
+                    </div>
+                    <div class="card-body">
+                      <p>{{items.category}}</p>
+                      <h4 class="card-product__title"><a href="/{{items.product_id}}">{{items.product_name}}</a></h4>
+                      <p class="card-product__price">Rs{{items.price}}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {% endfor %}{% endfor %}
+              {% endfor %}
             </div>
           </section>
           <!-- End Best Seller -->
