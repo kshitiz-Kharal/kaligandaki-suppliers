@@ -7,8 +7,6 @@ from math import ceil
 import json
 
 
-# Create your views here.
-
 def index(request):
     allProds = []
     first3 = Product.objects.all()[0:3]
@@ -21,6 +19,7 @@ def index(request):
     }
     return render(request, 'shop/index.html', context)
 
+
 def shop(request):
     categoryProds = Product.objects.values('category')
     category = {item['category'] for item in categoryProds}
@@ -31,48 +30,6 @@ def shop(request):
     }
     return render(request, 'shop/shop.html', context)
 
-def searchMatch(query, item):
-    print(query, item)
-    ''' Return true only if query matches the item '''
-    if query in item.description.lower() or query in item.product_name.lower() or query in item.category.lower() or query in item.subcategory.lower():
-        print('true')
-        return True
-    else:
-        print('false')
-        return False
-
-def search(request):
-    query = request.GET.get('query')
-    query = query.lower()
-    allProds = []
-    categoryProds = Product.objects.values('category')
-    category = {item['category'] for item in categoryProds}
-    allProds = Product.objects.all()
-    prods = [item for item in allProds if searchMatch(query, item)]
-    if len(prods) != 0:
-        context = {
-            "category":category,
-            "prods":prods,
-        }
-    return render(request, 'shop/search.html', context)
-    if len(allProds) == 0 or len(query) <3 :
-        params = {'msg': 'please enter valid value'}
-    return render(request, 'shop/search.html')
-
-def contact(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        subject = request.POST.get('subject')
-        message = request.POST.get('message')
-        contacts = Contact(name=name, email=email, subject=subject, message=message)
-        contacts.save()
-        messages.success(request, 'Your Message has been submitted succesfully')
-        redirect('/contact')
-    return render(request, 'shop/contact.html')
-
-def about(request):
-    return render(request, 'home/about.html')
 
 def handleSignup(request):
     if request.method == 'POST':
@@ -117,10 +74,11 @@ def handleSignup(request):
 
     return render(request, 'shop/signup.html')
 
+
 def handleLogin(request):
     if request.method == 'POST':
-        username = request.POST.get('loginemail')
-        password = request.POST.get('loginpass')
+        username = request.POST.get('email')
+        password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
@@ -131,9 +89,58 @@ def handleLogin(request):
             return redirect( '/')
     return render(request, 'shop/login.html')
 
+
 def handleLogout(request):
     logout(request)
     return redirect('/')
+
+
+def searchMatch(query, item):
+    print(query, item)
+    ''' Return true only if query matches the item '''
+    if query in item.description.lower() or query in item.product_name.lower() or query in item.category.lower() or query in item.subcategory.lower():
+        print('true')
+        return True
+    else:
+        print('false')
+        return False
+
+
+def search(request):
+    query = request.GET.get('query')
+    query = query.lower()
+    allProds = []
+    categoryProds = Product.objects.values('category')
+    category = {item['category'] for item in categoryProds}
+    allProds = Product.objects.all()
+    prods = [item for item in allProds if searchMatch(query, item)]
+    if len(prods) != 0:
+        context = {
+            "category":category,
+            "prods":prods,
+        }
+    return render(request, 'shop/search.html', context)
+    if len(allProds) == 0 or len(query) <3 :
+        params = {'msg': 'please enter valid value'}
+    return render(request, 'shop/search.html')
+
+
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        contacts = Contact(name=name, email=email, subject=subject, message=message)
+        contacts.save()
+        messages.success(request, 'Your Message has been submitted succesfully')
+        redirect('/contact')
+    return render(request, 'shop/contact.html')
+
+
+def about(request):
+    return render(request, 'shop/about.html')
+
 
 def prodView(request, product_id):
     post = Product.objects.filter(product_id=product_id).first()
@@ -143,8 +150,10 @@ def prodView(request, product_id):
     }
     return render(request, 'shop/product.html', context)
 
+
 def cart(request):
     return render(request, 'shop/cart.html')
+
 
 def checkout(request):
     if request.method == "POST":
@@ -158,7 +167,19 @@ def checkout(request):
         city = request.POST.get('city', '')
         state = request.POST.get('state', '')
         zip_code = request.POST.get('zip_code', '')
-        order = Order(items_json=items_json, name=name, email=email, phone=phone, address=address, address2=address2, city=city, state=state, zip_code=zip_code, amount=amount)
+        # esewa = request.POST.get('selector', '')
+        # cash = request.POST.get('selector1', '')
+        # if cash == "on" and esewa =="on":
+        #     messages.warning(request, "Please select only one payment method")
+        #     return redirect("/Checkout")
+        # elif esewa == "on":
+        #     order = Order(items_json=items_json, name=name, email=email, phone=phone, address=address, address2=address2, city=city, state=state, zip_code=zip_code, amount=amount, payment="esewa")
+        # elif cash == "on":
+        #     order = Order(items_json=items_json, name=name, email=email, phone=phone, address=address, address2=address2, city=city, state=state, zip_code=zip_code, amount=amount, payment="cash on delivery")
+        # else:
+        #     messages.error(request, "Some error occured. Please Check one of the payment method co checkout")
+        #     return redirect("/Checkout")
+        order = Order(items_json=items_json, name=name, email=email, phone=phone, address=address, address2=address2, city=city, state=state, zip_code=zip_code, amount=amount, payment="esewa")
         order.save()
         update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed")
         update.save()
@@ -167,22 +188,46 @@ def checkout(request):
         return render(request, 'shop/checkout.html', {'thank': thank, 'id': id})
     return render(request, 'shop/checkout.html')
 
+
 def tracker(request):
     if request.method=="POST":
         orderId = request.POST.get('orderId', '')
         email = request.POST.get('email', '')
         try:
-            order = Order.objects.filter(order_id=orderId, email=email)
-            if len(order) > 0:
+            order = Order.objects.filter(order_id=orderId, email=email).first()
+            if order:
                 update = OrderUpdate.objects.filter(order_id=orderId)
                 updates = []
                 for item in update:
-                    updates.append({'text': item.update_desc, 'time': item.timestamp})
-                    response = json.dumps({'status': 'success', 'updates': updates, 'itemsJason': order[0].items_json}, default=str)
-                return HttpResponse(response)
+                    updates.append([item.update_desc, str(item.timestamp)])
+                all = json.loads(order.items_json).values()
+                total = 0
+                for qty, name, price, sno in all:
+                    amount = int(price[3:])
+                    no = int(qty)
+                    total = total + (qty*amount)
+                context = {
+                    "items":all,
+                    "updates":updates,
+                    "order_no": orderId,
+                    "city":order.city,
+                    "zip_code":order.zip_code,
+                    "state":order.state,
+                    "address": order.state,
+                    "date": order.timestamp,
+                    "payment":order.payment,
+                    "total":total,
+
+
+                }
+                print('came')
+                return render(request, 'shop/details.html', context)
             else:
                 return HttpResponse('{"status": "noitem"}')
         except Exception as e:
+            print(e)
             return HttpResponse('{"status": "error"}')
 
-    return render(request, 'shop/tracker.html')
+
+def nopage(request, nopage):
+    return HttpResponse('Page Not Found')

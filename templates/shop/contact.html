@@ -16,6 +16,10 @@
     </div>
 
     <div class="container">
+    {% if user.is_authenticated %}
+    {% else %}
+    <h3 class="m-4">Login to Contact Us.</h3>
+    {% endif %}
       <div class="row">
         <div class="col-md-4 col-lg-3 mb-4 mb-md-0">
           <div class="media contact-info">
@@ -62,7 +66,11 @@
               </div>
             </div>
             <div class="form-group text-center text-md-right mt-3">
+            {% if user.is_authenticated %}
               <button type="submit" class="button button--active button-contactForm">Send Message</button>
+              {% else %}
+              <button type="submit" class="button button--active button-contactForm" disabled>Send Message</button>
+            {% endif %}
             </div>
           </form>
         </div>
@@ -72,7 +80,6 @@
 	<!-- ================ contact section end ================= -->
 
 {% block costomjs %}
-  <script src="{% static 'home/vendors/contact.js' %} "></script>
-  <script src="{% static 'home/vendors/jquery.validate.min.js' %} "></script>
+
 {% endblock costomjs %}
 {% endblock body %}

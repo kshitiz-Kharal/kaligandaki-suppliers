@@ -86,23 +86,18 @@
                               <ul class="list list_2" id="total">
                               </ul>
                               <div class="payment_item">
-                                  <div class="radion_btn">
-                                      <input type="radio" id="cash_in_d" name="cash_in_d">
-                                      <label for="f-option5">Cash on Delivery</label>
-                                      <div class="check"></div>
-                                  </div>
-                                  <p>Pay after your order reach to you!</p>
-                              </div>
-                              <div class="payment_item active">
-                                  <div class="radion_btn">
-                                      <input type="radio" id="E-sewa" name="E-sewa">
-                                      <label for="f-option6">E-sewa </label>
-                                      <img src="{% static 'home/img/product/card.jpg' %}" alt="">
-                                      <div class="check"></div>
-                                  </div>
-                                  <p>Pay via E-sewa; you can choose cash on delivery if you don’t have a E-sewa
-                                      account.</p>
-                              </div>
+                            <p>Pay after your item reach to you choosing cash on delivery!</p>
+                            <p> OR Pay via Khalti; you can pay with your credit card if you don’t have a Khalti account you don’t have Khalti account.</p>
+                        </div>
+                        {% comment %} <div class="payment_item active">
+                            <div class="radion_btn">
+                                <input type="radio" id="f-option6" name="selector">
+                                <label for="f-option6">E-sewa </label>
+                                <div class="check"></div>
+                            </div>
+                            <p>Pay via E-sewa; you can Select cash on delivery if you don’t have a E-sewa
+                                account.</p>
+                        </div> {% endcomment %}
                               <div class="text-center">
                                 <button class="button button-paypal" type="submit">Checkout</button>
                               </div>
@@ -122,6 +117,7 @@
 
 
 {% block js %}
+{% if user.is_authenticated %}
 <script>
     // Find out the cart items from localStorage
   if (localStorage.getItem('cart') == null) {
@@ -160,5 +156,7 @@ alert('Thank you for odering with us. your order is is {{id}}. Use this to track
 localStorage.clear();
 document.location = "/"
 {% endif %}
+$('#amount').val(subtotal)
 </script>
+{% endif %}
 {% endblock js %}

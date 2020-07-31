@@ -51,6 +51,9 @@
           display:inline;
         }
         }
+        .tracker{
+          {% comment %} z-index:100 {% endcomment %}
+        }
         {% block css %}
         {% endblock css %}
     </style>
@@ -61,7 +64,7 @@
     <div class="main_menu">
       <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-          <a class="navbar-brand logo_h" href="index.html"><img src="{% static 'home/img/logo.png' %}" alt=""></a>
+          <a class="navbar-brand logo_h" href="/"><h4>KaligandakiSuppaliers</h4></a>
           
           <!--================ Search button for small devices =================-->
           <div class=" nav-shop nav-item pt-5">
@@ -80,38 +83,38 @@
             <ul class="nav navbar-nav menu_nav ml-auto mr-auto">
               <li class="nav-item {% block home %}{% endblock home %}"><a class="nav-link" href="/">Home</a></li>
               <li class="nav-item {% block shop %}{% endblock shop %}"><a class="nav-link" href="/shop">shop</a></li>
-              <li class="nav-item submenu dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                  aria-expanded="false">Shop</a>
-                <ul class="dropdown-menu">
-                  <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
-                  <li class="nav-item"><a class="nav-link" href="single-product.html">Product Details</a></li>
-                  <li class="nav-item"><a class="nav-link" href="checkout.html">Product Checkout</a></li>
-                  <li class="nav-item"><a class="nav-link" href="confirmation.html">Confirmation</a></li>
-                  <li class="nav-item"><a class="nav-link" href="cart.html">Shopping Cart</a></li>
-                </ul>
-							</li>
               <li class="nav-item {% block contact %}{% endblock contact %}"><a class="nav-link" href="/contact">Contact</a></li>
+              <li class="nav-item {% block about  %}{% endblock about %}"><a class="nav-link" href="/about">About</a></li>
 							<li class="nav-item submenu dropdown">
+                {% if user.is_authenticated %}
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                  aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i>{{user.first_name}}</a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item"><a class="nav-link" href="/logout">LogOut</a></li>
+                </ul>
+                  {% else %}
+                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                   aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i>User</a>
                 <ul class="dropdown-menu">
-                {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="tracking-order.html">TrackOrder</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/logout">LogOut</a></li>
-                  {% else %}
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="/signup">Signup</a></li>
+                  </ul>
                 {% endif %}
-                </ul>
               </li>
+              {% if user.is_authenticated %}
+                <!--================ Tracker Modal Button =================-->
+              <li class="nav-item"><a class="nav-link" href="#"  data-toggle="modal" data-target="#tracker">Track Order</a></li>
+              <!--================ End Tracker Modal Button =================-->
+              {% endif %}
             </ul>
 
             <ul class="nav-shop">
               <!--================ Search button for large devices =================-->
               <li class="nav-item"><button class='m-btn' type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="ti-search"></i></button></li>
               <!--================ Search button for large devices end =================-->
+              {% if user.is_authenticated %}
               <li class="nav-item"><button><a href="/cart"><i class="ti-shopping-cart"></i></a><span class="nav-shop__circle" id="cart">0</span></button> </li>
+              {% endif %}
             </ul>
           </div>
         </div>
@@ -130,6 +133,66 @@
     </div>
   </header>
 	<!--================ End Header Menu Area =================-->
+    {% for message in messages %}
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show my-0" role="alert">
+  <strong>message: </strong> {{message}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endfor %}
+
+  <!--=============================== Tracker Modal ===============================-->
+
+
+<!-- Modal -->
+<div class="modal fade tracker" id="tracker" tabindex="-1" role="dialog" aria-labelledby="trackerLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="trackerLabel">Track Your Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!--============================= Modal Body =============================-->
+
+        <!--================Tracking Box Area =================-->
+        <section class="tracking_box_area">
+          <div class="container">
+            <div class="tracking_box_inner">
+              <p>To track your order please enter your Order ID in the box below and press the "Track" button. This
+                was given to you on your receipt and in the confirmation email you should have received.</p>
+              <form class="row tracking_form" action="/trackorder" method="post" id="trackerform">
+                {% csrf_token %}
+                <div class="col-md-12 form-group">
+                  <input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order ID">
+                </div>
+                <div class="col-md-12 form-group">
+                  <input type="email" class="form-control" id="email" name="email"
+                    placeholder="Billing Email Address">
+                </div>
+                <div class="col-md-12 form-group">
+                  <button type="submit" value="submit" class="button button-tracking">Track Order</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+        <!--================End Tracking Box Area =================-->
+
+
+        <!--============================= End Modal Body =============================-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!--=============================== End Tracker Modal ===============================-->
 
     {% block body %}
     {% endblock body %}
@@ -157,8 +220,8 @@
 							<h4 class="footer_title">Quick Links</h4>
 							<ul class="list">
 								<li><a href="/">Home</a></li>
-								<li><a href="#">Shop</a></li>
-								<li><a href="#">Product</a></li>
+								<li><a href="/shop">Shop</a></li>
+								<li><a href="/about">About</a></li>
 								<li><a href="/contact">Contact</a></li>
 							</ul>
 						</div>
@@ -209,8 +272,6 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	</footer>
 	<!--================ End footer Area  =================-->
 
-
-
   <script src="{% static 'home/vendors/jquery/jquery-3.2.1.min.js' %}"></script>
   <script src="{% static 'home/vendors/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'home/vendors/skrollr.min.js' %}"></script>
@@ -219,32 +280,18 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
   <script src="{% static 'home/vendors/jquery.ajaxchimp.min.js' %}"></script>
   <script src="{% static 'home/vendors/mail-script.js' %}"></script>
   <script src="{% static 'home/js/main.js' %}"></script>
-    {% comment %} <script>
-    // Find Out the items from localStorage
-     console.log('working');
-    if(localStorage.getItem('cart') == null){
-    var cart = {};
-    }
-    else
-    {
-    cart = JSON.parse(localStorage.getItem('cart'));
-    document.getElementById('cart').innerHTML = Object.keys(cart).length;
-    }
-    $('.cart').click(function(){
-    var idstr = this.id.toString();
-    if (cart[idstr] !=undefined){
-    cart[idstr] = cart[idstr] + 1;
-    }
-    else
-    {
-    cart[idstr] = 1;
-    }
-    console.log(cart);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    document.getElementById('cart').innerHTML = Object.keys(cart).length;
-    });
-    </script> {% endcomment %}
   {% block js %}
   {% endblock js %}
+  {% if user.is_authenticated %}
+  <script>
+    // Find out the cart items from localStorage
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+  } else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+  }
+ document.getElementById('cart').innerHTML= Object.keys(cart).length
+</script>
+{% endif %}
 </body>
 </html>

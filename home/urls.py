@@ -14,4 +14,5 @@ urlpatterns = [
     path('Checkout', views.checkout, name='checkout'),
     path('trackorder', views.tracker, name='tracker'),
     path('cart/', views.cart, name='cart'),
+    path('<str:nopage>', views.nopage, name="nopage")
 ]

@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+import uuid
 
 # Create your models here.
 
@@ -26,11 +29,16 @@ class Contact(models.Model):
     def __str__(self):
         return f'{self.name} by {self.email}'
 
+# import uuid
+# from django.db import models
 
+# class MyUUIDModel(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     # other fields
 
 
 class Order(models.Model):
-    order_id = models.AutoField(primary_key=True)
+    order_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     items_json = models.CharField(max_length=5000)
     name = models.CharField(max_length=70, default="")
     phone = models.CharField(max_length=14)
@@ -41,6 +49,8 @@ class Order(models.Model):
     city = models.CharField(max_length=50, default="")
     state = models.CharField(max_length=30)
     zip_code = models.CharField(max_length=5)
+    timestamp = models.DateField(auto_now_add=True)
+    payment = models.CharField(max_length=500, default="")
 
     def __str__(self):
         return f"{self.name} by {self.email}"
@@ -54,4 +64,18 @@ class OrderUpdate(models.Model):
 
     def __str__(self):
         return self.update_desc[0:7] + "..."
-    
+
+
+class PostComment(models.Model):
+    sno = models.AutoField(primary_key=True)
+    comment = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Product, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self',  on_delete=models.CASCADE, null=True)
+    timestamp = models.DateTimeField(default=now)
+
+    def __str__(self):
+        if len(self.comment)>13:
+            return f"{self.comment[0:13]}... by {self.user}"
+        else:
+            return f"{self.comment} by {self.user}"

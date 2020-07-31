@@ -19,7 +19,11 @@
             <h1>Browse Our Premium Product</h1>
             <p>Us which over of signs divide dominion deep fill bring they're meat beho upon own earth without morning
               over third. Their male dry. They are great appear whose land fly grass.</p>
+              {% if user.is_authenticated %}
             <a class="button button-hero" href="/shop">Shop Now</a>
+            {% else %}
+            <a class="button button-hero" href="/sinup">Sign Up</a>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -59,7 +63,9 @@
               <ul class="card-product__imgOverlay">
                 <li><a href="/{{item.product_id}}"><button><i class="fa fa-eye" aria-hidden="true"></i></button></a>
                 </li>
+                {% if user.is_authenticated %}
                 <li class="divpr" id="divpr{{item.product_id}}"><button id="pr{{item.product_id}}" class="cart"><i class="ti-shopping-cart"></i></button></li>
+                {% endif %}
               </ul>
             </div>
             <div class="card-body">
@@ -107,6 +113,7 @@
 
 </main>
 {% block js %}
+{% if user.is_authenticated %}
 <script>
   // Find out the cart items from localStorage
   if (localStorage.getItem('cart') == null) {
@@ -119,6 +126,7 @@
   //$('.cart').click(function () {
     $('.divpr').on('click', 'button.cart',function(){
     var idstr = this.id.toString();
+    console.log(idstr)
     if (cart[idstr] != undefined) {
       let qty = cart[idstr][0] + 1;
       cart[idstr] = [qty, name];
@@ -175,6 +183,7 @@
     updateCart(cart);
   });
 </script>
+{% endif %}
 {% endblock js %}
 
 
