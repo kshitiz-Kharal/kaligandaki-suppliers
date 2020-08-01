@@ -1,0 +1,162 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Checkout{% endblock title %}
+{% block costomcss %}
+ <link rel="stylesheet" href="{% static 'home/vendors/nouislider/nouislider.min.css' %} ">
+{% endblock costomcss %}
+{% block body %}
+	<!-- ================ start banner area ================= -->	
+	<section class="blog-banner-area" id="category">
+		<div class="container h-100">
+			<div class="blog-banner">
+				<div class="text-center">
+					<h1>KaliGandakiSuppliers</h1>
+					<nav aria-label="breadcrumb" class="banner-breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Express Checkout</li>
+            </ol>
+          </nav>
+				</div>
+			</div>
+    </div>
+	</section>
+	<!-- ================ end banner area ================= -->
+  
+  
+  <!--================Checkout Area =================-->
+  <section class="checkout_area section-margin--small">
+    <div class="container">
+        <div class="billing_details">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h3>Billing Details</h3>
+                    <form class="row contact_form" action="/Checkout" method="post">
+                      {% csrf_token %}
+                      <input type="hidden" name="itemsJson" id="itemsJson">
+                      <input type="hidden" name="amount" id="amount">
+                      <div class="col-md-12 form-group p_star">
+                      <label>Full Name</label>
+                          <input type="text" class="form-control" id="name" name="name" placeholder="Sandesh Dhakal" required>
+                      </div>
+                      <div class="col-md-12 form-group p_star">
+                      <label>Phone Number</label>
+                          <input type="number" class="form-control" id="phone" name="phone"  placeholder="9893323423" required>
+                      </div>
+                      <div class="col-md-12 form-group p_star">
+                      <label>Email Address</label>
+                          <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com" required>
+                      </div>
+                      <div class="col-md-12 form-group p_star">
+                      <label>State</label>
+                          <select class="country_select" id="state" name="state">
+                              <option value="Pradesh 1" selected>Pradesh 1</option>
+                              <option value="Pradesh 2">Pradesh 2</option>
+                              <option value="Bagmati Pradesh">Bagmati Pradesh</option>
+                              <option value="Gandaki Pradesh">Gandaki Pradesh</option>
+                              <option value="Pradesh 5">Pradesh 5</option>
+                              <option value="Karnali Pradesh">Karnali Pradesh</option>
+                              <option value="SudurPaschim Pradesh">SudurPaschim Pradesh</option>
+                          </select>
+                      </div>
+                      <div class="col-md-12 form-group p_star">
+                      <label>Shipping Address</label>
+                          <input type="text" class="form-control" id="add1" name="add1" placeholder="Mutwal-10, Kalikanagar, Rupandehi" required>
+                      </div>
+                      <div class="col-md-12 form-group p_star">
+                      <label>Address Line 2(Optional)</label>
+                          <input type="text" class="form-control" id="add2" name="add2"placeholder="Siddhartha Nagar-5, Bhairava">
+                      </div>
+                      <div class="col-md-12 form-group p_star">
+                      <label>City</label>
+                          <input type="text" class="form-control" id="city" name="city" placeholder="Butwal" required>
+                      </div>
+                      <div class="col-md-12 form-group">
+                      <label>Postcode/ZIP</label>
+                          <input type="number" class="form-control" id="zip_code" name="zip_code" placeholder="32900" required>
+                      </div>
+                    
+                      </div>
+                      <div class="col-lg-4">
+                          <div class="order_box">
+                              <h2>Your Order</h2>
+                              <ul class="list" id="items">
+                                  <li><a href="#"><h4>Product <span>Total</span></h4></a></li>
+                              </ul>
+                              <ul class="list list_2" id="total">
+                              </ul>
+                              <div class="payment_item">
+                            <p>Pay after your item reach to you choosing cash on delivery!</p>
+                            <p> OR Pay via Khalti; you can pay with your credit card if you don’t have a Khalti account you don’t have Khalti account.</p>
+                        </div>
+                        {% comment %} <div class="payment_item active">
+                            <div class="radion_btn">
+                                <input type="radio" id="f-option6" name="selector">
+                                <label for="f-option6">E-sewa </label>
+                                <div class="check"></div>
+                            </div>
+                            <p>Pay via E-sewa; you can Select cash on delivery if you don’t have a E-sewa
+                                account.</p>
+                        </div> {% endcomment %}
+                              <div class="text-center">
+                                <button class="button button-paypal" type="submit">Checkout</button>
+                              </div>
+                          </div>
+                      </div>
+                </form>
+            </div>
+        </div>
+    </div>
+  </section>
+  <!--================End Checkout Area =================-->
+
+
+
+{% endblock body %}
+
+
+
+{% block js %}
+{% if user.is_authenticated %}
+<script>
+    // Find out the cart items from localStorage
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+  } else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+  }
+var subtotal = 0;
+var sum = 0;
+if ($.isEmptyObject(cart)==true){
+let mystr = `<li><a href="#">No Items in your Cart. Please add some item before checking out</span></a></li>`
+$('#items').append(mystr)
+}
+else{
+  for(item in cart){
+      let name = cart[item][1]
+      let qty = cart[item][0]
+      let price = cart[item][2].slice(3, )
+      let id = parseInt(cart[item][3])
+      let total = price*qty
+      sum = sum + qty;
+      subtotal = subtotal + (price*qty)
+      let mystr = `<li><a href="#">${name} <span class="middle">x ${qty}</span> <span class="last">Rs.${total}</span></a></li>`
+        $('#items').append(mystr)
+      var newstr = `
+                  <li><a href="#">Shipping <span>Flat rate: Rs.50.00</span></a></li>
+                  <li><a href="#">Total <span>Rs.${subtotal}</span></a></li>
+                  `
+  };
+$('#total').append(newstr);
+};
+document.getElementById('cart').innerHTML = sum;
+$('#itemsJson').val(JSON.stringify(cart));
+{% if thank %}
+alert('Thank you for odering with us. your order is is {{id}}. Use this to track your order using our order tracker');
+localStorage.clear();
+document.location = "/"
+{% endif %}
+$('#amount').val(subtotal)
+</script>
+{% endif %}
+{% endblock js %}

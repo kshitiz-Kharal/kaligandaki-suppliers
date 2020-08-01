@@ -1,0 +1,80 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Signup{% endblock title %}
+{% block body %}
+
+
+{% block costomcss %}
+<link rel="stylesheet" href="vendors/nouislider/nouislider.min.css">
+{% endblock costomcss %}
+
+
+<!-- ================ start banner area ================= -->
+<section class="blog-banner-area" id="category">
+	<div class="container h-100">
+		<div class="blog-banner">
+			<div class="text-center">
+				<h1>KaliGandakiSuppliers</h1>
+				<nav aria-label="breadcrumb" class="banner-breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="#">Home</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Signup</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- ================ end banner area ================= -->
+
+<!--================Login Box Area =================-->
+<section class="login_box_area section-margin">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="login_box_img">
+					<div class="hover">
+						<h4>Already have an account?</h4>
+						<p>We provide you the exclusive premium quality products as you want</p>
+						<a class="button button-account" href="/login">Login Now</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="login_form_inner register_form_inner">
+					<h3>Create an account</h3>
+					<form class="row login_form" action="/signup" id="signup_form" method="post">
+					{% csrf_token %}
+						<div class="col-md-12 form-group">
+							<input type="text" class="form-control" id="fname" name="fname" placeholder="First Name"
+								onfocus="this.placeholder = ''" onblur="this.placeholder = 'First Name'">
+						</div>
+						<div class="col-md-12 form-group">
+							<input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Last Name'">
+						</div>
+						<div class="col-md-12 form-group">
+							<input type="text" class="form-control" id="email" name="email" placeholder="Email Address"
+								onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address'">
+						</div>
+						<div class="col-md-12 form-group">
+							<input type="password" class="form-control" id="pass1" name="pass1" placeholder="Password"
+								onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+							<small>Password must contain one special character one uppercase and should be alphanumeric</small>
+						</div>
+						<div class="col-md-12 form-group">
+							<input type="password" class="form-control" id="pass2" name="pass2"
+								placeholder="Confirm Password" onfocus="this.placeholder = ''"
+								onblur="this.placeholder = 'Confirm Password'">
+						</div>
+						<div class="col-md-12 form-group">
+							<button type="submit" value="submit" class="button button-register w-100">SignUp</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!--================End Login Box Area =================-->
+
+{% endblock body %}

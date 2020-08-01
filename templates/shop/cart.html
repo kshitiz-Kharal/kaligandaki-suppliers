@@ -1,0 +1,162 @@
+{% extends 'shop/base.html' %}
+{% block title %}Cart{% endblock title %}
+{% load static %}
+{% block costomcss %}
+  <link rel="stylesheet" href="{% static 'home/vendors/nouislider/nouislider.min.css' %} ">
+
+{% endblock costomcss %}
+{% block css %}
+.clear-btn{
+    cursor: pointer;
+}
+{% endblock css %}
+
+{% block body %}
+
+  <!--================Cart Area =================-->
+  <section class="cart_area">
+      <div class="container">
+          <div class="cart_inner">
+              <div class="table-responsive">
+                  <table class="table">
+                      <thead>
+                          <tr>
+                              <th scope="col">Product</th>
+                              <th scope="col">Price</th>
+                              <th scope="col">Quantity</th>
+                              <th scope="col">Total</th>
+                          </tr>
+                      </thead>
+                        <tbody id="items">
+                        </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </section>
+  <!--================End Cart Area =================-->
+
+
+{% endblock body %}
+
+{% block js %}
+{% if user.is_authenticated %}
+<script>
+    // Find out the cart items from localStorage
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+  } else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+  }
+    var subtotal = 0;
+    var i = 1;
+    for(item in cart){
+        let name = cart[item][1]
+        let qty = cart[item][0]
+        let price = cart[item][2].slice(3, )
+        let id = parseInt(cart[item][3])
+        subtotal = subtotal + (price*qty)
+        let mystr = `<tr>
+                    <td>
+                        <div class="media">
+                            <div class="media-body">
+                                <h5>${i}. ${name}</h5>
+                            </div>
+                        </div>
+                    </td>
+                <td>
+                    <h5>Rs.${price}</h5>
+                </td>
+                <td>
+                    <div class="product_count">
+                        <input type="text" name="qty" id="${id}" disabled maxlength="12" value="${qty}" title="Quantity:"
+                            class="input-text qty">
+                    </div>
+                </td>
+                <td>
+                    <h5>Rs.${price*qty}</h5>
+                </td>
+            </tr>`
+            $('#items').append(mystr);
+            
+            var newstr = `<tr class="bottom_button">
+                        <td>
+                            <a role="button" class="button clear-btn primary-btn" onclick="clearCart()">Clear Cart</a>
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+                            <div class="cupon_text d-flex align-items-center">
+                                <input type="text" placeholder="Coupon Code">
+                                <a class="primary-btn" disabled>Apply</a>
+                                <a class="button" disabled>Have a Coupon?</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+                            <h5>Subtotal</h5>
+                        </td>
+                        <td>
+                            <h5>Rs.${subtotal}</h5>
+                        </td>
+                    </tr>
+                    <tr class="out_button_area">
+                        <td class="d-none-l">
+
+                        </td>
+                        <td class="">
+
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+                            <div class="checkout_btn_inner d-flex align-items-center">
+                                <a class="gray_btn" href="/shop">Shop More</a>
+                                <a class="primary-btn ml-2" href="/Checkout">checkout</a>
+                            </div>
+                        </td>
+                    </tr>`
+
+        
+    i = i + 1;
+
+    };
+    if (newstr!=undefined){
+    $('#items').append(newstr);
+    };
+    if (jQuery.isEmptyObject(cart)==true){
+    let no_items=`<p>No Products Found in Your cart.</p>`
+    $('#items').append(no_items);
+    };
+    function updateCart(cart) {               
+        let sum = 0;
+        for (var item in cart) {
+        sum = sum + cart[item][0];
+        document.getElementById('div' + item).innerHTML = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span class='text-danger badge badge-primary text-wrap' id='val" + item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        document.getElementById('cart').innerHTML = sum;
+    }
+    
+
+    function clearCart(cart){
+    cart = JSON.parse(localStorage.getItem('cart'))
+    localStorage.clear();
+    cart = {};
+    updateCart(cart);
+    };
+</script>
+{% endif %}
+{% endblock js %}

@@ -21,6 +21,3 @@ toml==0.10.1
 urllib3==1.25.9
 virtualenv==20.0.27
 wrapt==1.12.1
-
-
-this is requirements .txt

@@ -1,0 +1,236 @@
+{% extends 'shop/base.html' %}
+{% block title %}Order-Tracker{% endblock title %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'home/vendors/nouislider/nouislider.min.css' %} ">
+{% block body %}
+<!-- ================ start banner area ================= -->
+<section class="blog-banner-area" id="category">
+	<div class="container h-100">
+		<div class="blog-banner">
+			<div class="text-center">
+				<h1>Order Tracking</h1>
+				<nav aria-label="breadcrumb" class="banner-breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="#">Home</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Order Tracking</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- ================ end banner area ================= -->
+
+
+<!--================Tracking Box Area =================-->
+<section class="tracking_box_area section-margin--small">
+	<div class="container">
+		<div class="tracking_box_inner">
+			<p>To track your order please enter your Order ID in the box below and press the "Track" button. This
+				was given to you on your receipt and in the confirmation email you should have received.</p>
+			<form class="row tracking_form" action="/trackorder" method="post" id="trackerform">
+				{% csrf_token %}
+				<div class="col-md-12 form-group">
+					<input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order ID">
+				</div>
+				<div class="col-md-12 form-group">
+					<input type="email" class="form-control" id="email" name="email"
+						placeholder="Billing Email Address">
+				</div>
+				<div class="col-md-12 form-group">
+					<button type="submit" value="submit" class="button button-tracking">Track Order</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>
+<!--================End Tracking Box Area =================-->
+
+
+<!--================Order Details Area =================-->
+<section class="order_details section-margin--small">
+	<div class="container">
+		<p class="text-center billing-alert" id="items"></p>
+		<div class="order_details_table">
+			<h2>Order Details</h2>
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Product</th>
+							<th scope="col">Quantity</th>
+							<th scope="col">Total</th>
+						</tr>
+					</thead>
+					<tbody id="items">
+						<tr>
+							<td>
+								<p>Pixelstore fresh Blackberry</p>
+							</td>
+							<td>
+								<h5>x 02</h5>
+							</td>
+							<td>
+								<p>$720.00</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>Pixelstore fresh Blackberry</p>
+							</td>
+							<td>
+								<h5>x 02</h5>
+							</td>
+							<td>
+								<p>$720.00</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>Pixelstore fresh Blackberry</p>
+							</td>
+							<td>
+								<h5>x 02</h5>
+							</td>
+							<td>
+								<p>$720.00</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<h4>Subtotal</h4>
+							</td>
+							<td>
+								<h5></h5>
+							</td>
+							<td>
+								<p>$2160.00</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<h4>Shipping</h4>
+							</td>
+							<td>
+								<h5></h5>
+							</td>
+							<td>
+								<p>Flat rate: $50.00</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<h4>Total</h4>
+							</td>
+							<td>
+								<h5></h5>
+							</td>
+							<td>
+								<h4>$2210.00</h4>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</section>
+<!--================End Order Details Area =================-->
+
+{% endblock body %}
+
+
+{% block js %}
+{% if user.is_authenticated %}
+<script>
+	$('.trackerform').submit(function (event) {
+	event.preventDefault();
+		$('#items').empty();
+		var formData = {
+			'orderId': $('input[name=orderId]'),
+			"email": $('input[name=email]'),
+			'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]')
+
+		};
+		$.ajax({
+			type: 'POST',
+			url: '/shop/tracker/',
+			data: formData,
+			encode: true
+		})
+			.done(function (data) {
+				data = JSON.parse(data);
+				if (data['status'] == 'success') {
+					updates = data['updates'];
+					for (i = 0; i < updates.length; i++) {
+						let text = updates[i]['text'];
+						let time = updates[i]['time'];
+						mystr = `<p class="text-center billing-alert">${text} on ${time}</p>`
+						$('#items').append(mystr);
+					}
+					// Fill in the order details
+					cart = JSON.parse(data['itemsJason']);
+					$('#citems').empty();
+					var subtotal = 0;
+					var sum = 0;
+					for (item in cart) {
+						let name = cart[item][1]
+						let qty = cart[item][0]
+						let price = cart[item][2].slice(3,)
+						let id = parseInt(cart[item][3])
+						let total = price * qty
+						sum = sum + qty;
+						subtotal = subtotal + (price * qty)
+						var mystr = `<tr>
+							<td>
+								<p>${name}</p>
+							</td>
+							<td>
+								<h5>x ${qty}</h5>
+							</td>
+							<td>
+								<p>${total}</p>
+							</td>
+						</tr>`
+						$('#citems').append(mystr);
+						newstr = `</tr>
+						<tr>
+							<td>
+								<h4>Subtotal</h4>
+							</td>
+							<td>
+								<h5></h5>
+							</td>
+							<td>
+								<p>${subtotal}</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<h4>Shipping</h4>
+							</td>
+							<td>
+								<h5></h5>
+							</td>
+							<td>
+								<p>Flat rate: Conditional</p>
+							</td>
+						</tr>`
+					}
+					if (newstr!=undefined){
+						$('#citems').append(newstr);
+					};
+				} else {
+					mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+					$('#items').append(mystr);
+					$('#citems').append(mystr);
+
+				}
+
+			});
+		event.preventDefault();
+	});
+</script>
+{% endif %}
+{% endblock %}

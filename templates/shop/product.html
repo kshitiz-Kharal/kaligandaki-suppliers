@@ -1,0 +1,226 @@
+{% extends 'shop/base.html' %}
+{% block title %}{{post.product_name}}{% endblock title %}
+{% block body %}
+{% load static %}
+{% load humanize %} 
+{% load extras %}
+
+
+
+<!--================Single Product Area =================-->
+<div class="product_image_area">
+	<div class="container">
+		<div class="row s_product_inner">
+			<div class="col-lg-6">
+				<div class="owl-carousel owl-theme s_Product_carousel">
+					<div class="single-prd-item">
+						<img src="media/{{post.img}}" alt="" class="img-fluid">
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-5 offset-lg-1">
+				<div class="s_product_text cart">
+					<h3 id="namepr{{post.product_id}}">{{post.product_name}}</h3>
+					<h2 id="pricepr{{post.product_id}}">Rs.{{post.price}}</h2>
+					<ul class="list">
+						<li><a class="active" href=""><span>Category</span> : {{post.category}}</a></li>
+						<li><a href="#"><span>Availibility</span> : In Stock</a></li>
+					</ul>
+					<p>{{post.description}}</p>
+					<div class="product_count">
+						<label for="qty">Quantity:</label>
+						<input type="hidden" name="id" id="id" value = "pr{{post.product_id}}">
+						<input type="text" name="qty" id="sst" size="2" maxlength="12" value="1" title="Quantity:" class="input-text qty">
+						
+					</div>
+					{% if user.is_authenticated %}
+					<button onclick="addcart()" class="button primary-btn divpr" id='pr{{post.product_id}}'>Add to cart</button>
+					{% else %}
+					<button onclick="addcart()" class="button primary-btn divpr" id='pr{{post.product_id}}' disabled>Signup to Add to cart</button>
+					{% endif %}
+					<div class="card_area d-flex align-items-center">
+						<a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
+						<a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--================End Single Product Area =================-->
+
+<!--================Product Description Area =================-->
+<section class="product_description_area">
+	<div class="container">
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+					aria-selected="true">Description</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link active" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
+					aria-controls="contact" aria-selected="false">Comments & Reviews({{comments.count}})</a>
+			</li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+				<p>{{post.description}}</p>
+			</div>
+			<div class="tab-pane fade  show active" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="comment_list">
+							{% for comment in comments %}
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img width="50" src="{% static 'home/img/user.png' %}"</img>
+										</div>
+										<div class="media-body">
+											<h4>{{comment.user.first_name}} {{comment.user.last_name}}</h4>
+											<h5>{{comment.timestamp | naturaltime}}</h5>
+											<a class="reply_btn" data-toggle="collapse" href="#reply_colapse{{comment.sno}}" role="button" aria-expanded="false" aria-controls="reply_colapse{{comment.sno}}">Reply</a>
+										</div>
+									</div>
+									<div class="container mt-3">
+									<p class="ml-3 text-dark bg-light">{{comment.comment}}</p>
+									</div>
+									
+								</div>
+
+								<!--================== Reply Colapse ==================-->
+
+									
+								<div class="collapse  mb-4 ml-3" id="reply_colapse{{comment.sno}}">
+									<div class="card-body p-0">
+									<!--============= Colapse Body =============-->
+										<form class="row contact_form" action="/postComment" method="post" id="contactForm">
+											{% csrf_token %}
+											<div class="col-md-12">
+												<div class="form-group">
+													<input type="hidden" name="post_id" value="{{id}}">
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<textarea class="form-control" name="comment" id="comment" rows="7"
+														placeholder="Enter reply here"></textarea>
+													<input type="hidden" name="parentsno" value="{{comment.sno}}">
+												</div>
+											</div>
+											<div class="col-md-12 text-right">
+												{% if user.is_authenticated %}
+												<button type="submit" value="submit" class="btn primary-btn">Reply</button>
+												{% else %}
+												<button type="submit" value="submit" class="btn primary-btn" disabled>Sign in to reply</button>
+												{% endif %}
+											</div>
+										</form>
+									</div>
+								</div>
+								{% for items in repDict|get_val:comment.sno %}
+									<div class="container mx-4 p-0">
+										<div class="review_item mb-4">
+											<div class="media">
+												<div class="d-flex">
+													<img width="40" src="{% static 'home/img/user.png' %}"</img>
+												</div>
+												<div class="media-body">
+													<h4>{{items.user.first_name}} {{items.user.last_name}}</h4>
+													<h5>{{items.timestamp | naturaltime}}</h5>
+												</div>
+											</div>
+											<div class="container mt-3">
+											<p class="ml-3 text-dark bg-light">{{items.comment}}</p>
+											</div>
+								
+										</div>
+									</div>
+								{% endfor %}
+								<hr>
+
+								<!--================== Reply Colapse ==================-->
+							{% endfor %}
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<div class="review_box">
+							<h4>Post a comment or review</h4>
+							<form class="row contact_form" action="/postComment" method="post" id="contactForm">
+							{% csrf_token %}
+								<div class="col-md-12">
+									<div class="form-group">
+										<input type="hidden" name="post_id" value="{{id}}">
+										<input type="hidden" name="parentsno" value="">
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<textarea class="form-control" name="comment" id="comment" rows="7"
+											placeholder="Enter comment here"></textarea>
+									</div>
+								</div>
+								<div class="col-md-12 text-right">
+									{% if user.is_authenticated %}
+									<button type="submit" value="submit" class="btn primary-btn">Comment</button>
+									{% else %}
+									<button type="submit" value="submit" class="btn primary-btn" disabled>Sign in to comment</button>
+									{% endif %}
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!--================End Product Description Area =================-->
+
+
+{% endblock body %}
+
+
+{% block js %}
+{% if user.is_authenticated %}
+<script>
+  // Find out the cart items from localStorage
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+  } else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    updateCart(cart);
+  }
+  console.log(cart)
+  // If the add to cart button is clicked, add/increment the item
+  //$('.cart').click(function () {
+    {% comment %} $('.divpr').on('click', 'button.cart',function(){ {% endcomment %}
+	function addcart(){
+    var idstr = document.getElementById('id').value
+	var value = document.getElementById('sst').value
+    var name = document.getElementById('name'+idstr).innerHTML;
+    var price = document.getElementById('price'+idstr).innerHTML;
+    var id = idstr.slice(2, );
+	console.log(value)
+    if (cart[idstr] != undefined) {
+      let qty = parseInt(value);
+      cart[idstr] = [qty, name, price, id];
+    } else {
+      let qty = parseInt(value);
+      cart[idstr] = [qty, name, price, id];
+    }
+    updateCart(cart);
+    console.log(cart);
+
+  };
+  function updateCart(cart) {
+    let sum = 0;
+    for (var item in cart) {
+      sum = sum + cart[item][0];
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;
+  }
+</script>
+{% endif %}
+{% endblock js %}

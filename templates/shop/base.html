@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>KaligandakiSuppaliers - {% block title %}{% endblock title %}</title>
+	<link rel="icon" href="{% static 'home/img/Fevicon.png' %}" type="image/png">
+  <link rel="stylesheet" href="{% static 'home/vendors/bootstrap/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/vendors/fontawesome/css/all.min.css' %}">
+	<link rel="stylesheet" href="{% static 'home/vendors/themify-icons/themify-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'home/vendors/nice-select/nice-select.css' %}">
+  <link rel="stylesheet" href="{% static 'home/vendors/owl-carousel/owl.theme.default.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/vendors/owl-carousel/owl.carousel.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'home/vendors/linericon/style.css' %} ">
+    {% block costomcss %}
+    {% endblock costomcss %}
+    <style>
+        .s-btn, .m-btn{
+          display:none;
+        }
+        @media only screen and (min-width: 400px) and (max-width: 700px) {
+            .try{
+
+            margin-right: 9rem;
+            }
+        }
+        @media only screen and (min-width: 700px){
+
+        .try{
+          margin-right: 10rem
+        }
+        }
+        @media only screen and (max-width: 400px){
+
+        .try{
+          margin-right: 2rem
+        }
+        }
+        @media only screen and (max-width: 991px){
+
+        .s-btn{
+          display:inline;
+        }
+        }
+        @media only screen and (min-width: 992px){
+
+        .m-btn{
+          display:inline;
+        }
+        }
+        .tracker{
+          {% comment %} z-index:100 {% endcomment %}
+        }
+        {% block css %}
+        {% endblock css %}
+    </style>
+</head>
+<body>
+  <!--================ Start Header Menu Area =================-->
+	<header class="header_area">
+    <div class="main_menu">
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+          <a class="navbar-brand logo_h" href="/"><h4>KaligandakiSuppaliers</h4></a>
+          
+          <!--================ Search button for small devices =================-->
+          <div class=" nav-shop nav-item pt-5">
+            <li class="nav-item"><button class='s-btn' type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="ti-search"></i></button></li>
+          </div>
+
+            <!--================ Search button for small devices =================-->
+
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+            <ul class="nav navbar-nav menu_nav ml-auto mr-auto">
+              <li class="nav-item {% block home %}{% endblock home %}"><a class="nav-link" href="/">Home</a></li>
+              <li class="nav-item {% block shop %}{% endblock shop %}"><a class="nav-link" href="/shop">shop</a></li>
+              <li class="nav-item {% block contact %}{% endblock contact %}"><a class="nav-link" href="/contact">Contact</a></li>
+              <li class="nav-item {% block about  %}{% endblock about %}"><a class="nav-link" href="/about">About</a></li>
+							<li class="nav-item submenu dropdown">
+                {% if user.is_authenticated %}
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                  aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i>{{user.first_name}}</a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item"><a class="nav-link" href="/logout">LogOut</a></li>
+                </ul>
+                  {% else %}
+                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                  aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i>User</a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/signup">Signup</a></li>
+                  </ul>
+                {% endif %}
+              </li>
+              {% if user.is_authenticated %}
+                <!--================ Tracker Modal Button =================-->
+              <li class="nav-item"><a class="nav-link" href="#"  data-toggle="modal" data-target="#tracker">Track Order</a></li>
+              <!--================ End Tracker Modal Button =================-->
+              {% endif %}
+            </ul>
+
+            <ul class="nav-shop">
+              <!--================ Search button for large devices =================-->
+              <li class="nav-item"><button class='m-btn' type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="ti-search"></i></button></li>
+              <!--================ Search button for large devices end =================-->
+              {% if user.is_authenticated %}
+              <li class="nav-item"><button><a href="/cart"><i class="ti-shopping-cart"></i></a><span class="nav-shop__circle" id="cart">0</span></button> </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+    </nav>
+    
+        <div class="collapse small" id="collapseExample">
+            <div class="card card-body">
+                <form action="/search" method="get" class="form-inline mt-2 pt-1 ml-auto" >
+                    <div class="try form-group ml-sm-auto">
+                        <input class="form-control mb-1 p-4 mr-3" type="text" name="query" placeholder="Search Your Favourites">
+                        <button class="button mr-auto mb-1" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+  </header>
+	<!--================ End Header Menu Area =================-->
+    {% for message in messages %}
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show my-0" role="alert">
+  <strong>message: </strong> {{message}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endfor %}
+
+  <!--=============================== Tracker Modal ===============================-->
+
+
+<!-- Modal -->
+<div class="modal fade tracker" id="tracker" tabindex="-1" role="dialog" aria-labelledby="trackerLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="trackerLabel">Track Your Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!--============================= Modal Body =============================-->
+
+        <!--================Tracking Box Area =================-->
+        <section class="tracking_box_area">
+          <div class="container">
+            <div class="tracking_box_inner">
+              <p>To track your order please enter your Order ID in the box below and press the "Track" button. This
+                was given to you on your receipt and in the confirmation email you should have received.</p>
+              <form class="row tracking_form" action="/trackorder" method="post" id="trackerform">
+                {% csrf_token %}
+                <div class="col-md-12 form-group">
+                  <input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order ID">
+                </div>
+                <div class="col-md-12 form-group">
+                  <input type="email" class="form-control" id="email" name="email"
+                    placeholder="Billing Email Address">
+                </div>
+                <div class="col-md-12 form-group">
+                  <button type="submit" value="submit" class="button button-tracking">Track Order</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+        <!--================End Tracking Box Area =================-->
+
+
+        <!--============================= End Modal Body =============================-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!--=============================== End Tracker Modal ===============================-->
+
+    {% block body %}
+    {% endblock body %}
+
+    
+  <!--================ Start footer Area  =================-->	
+	<footer class="footer">
+		<div class="footer-area">
+			<div class="container">
+				<div class="row section_gap">
+					<div class="col-lg-3 col-md-6 col-sm-6">
+						<div class="single-footer-widget tp_widgets">
+							<h4 class="footer_title large_title">Our Mission</h4>
+							<p>
+								So seed seed green that winged cattle in. Gathering thing made fly you're no 
+								divided deep moved us lan Gathering thing us land years living.
+							</p>
+							<p>
+								So seed seed green that winged cattle in. Gathering thing made fly you're no divided deep moved 
+							</p>
+						</div>
+					</div>
+					<div class="offset-lg-1 col-lg-2 col-md-6 col-sm-6">
+						<div class="single-footer-widget tp_widgets">
+							<h4 class="footer_title">Quick Links</h4>
+							<ul class="list">
+								<li><a href="/">Home</a></li>
+								<li><a href="/shop">Shop</a></li>
+								<li><a href="/about">About</a></li>
+								<li><a href="/contact">Contact</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="offset-lg-1 col-lg-3 col-md-6 col-sm-6">
+						<div class="single-footer-widget tp_widgets">
+							<h4 class="footer_title">Contact Us</h4>
+							<div class="ml-40">
+								<p class="sm-head">
+									<span class="fa fa-location-arrow"></span>
+									Head Office
+								</p>
+								<p>Siddhartha Highway, Butwal, MilanChowk Rupandehi</p>
+	
+								<p class="sm-head">
+									<span class="fa fa-phone"></span>
+									Phone Number
+								</p>
+								<p>
+									+977 984 7519005 <br>
+									+977 984 2918676
+								</p>
+	
+								<p class="sm-head">
+									<span class="fa fa-envelope"></span>
+									Email
+								</p>
+								<p>
+									kaligandaki@gmail.com <br>
+									www.KaliGandakiSuppliers.com
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="footer-bottom">
+			<div class="container">
+				<div class="row d-flex">
+					<p class="col-lg-12 footer-text text-center">
+						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | KaligandakiSuppaliers
+				</div>
+			</div>
+		</div>
+	</footer>
+	<!--================ End footer Area  =================-->
+
+  <script src="{% static 'home/vendors/jquery/jquery-3.2.1.min.js' %}"></script>
+  <script src="{% static 'home/vendors/bootstrap/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'home/vendors/skrollr.min.js' %}"></script>
+  <script src="{% static 'home/vendors/owl-carousel/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'home/vendors/nice-select/jquery.nice-select.min.js' %}"></script>
+  <script src="{% static 'home/vendors/jquery.ajaxchimp.min.js' %}"></script>
+  <script src="{% static 'home/vendors/mail-script.js' %}"></script>
+  <script src="{% static 'home/js/main.js' %}"></script>
+  {% block js %}
+  {% endblock js %}
+  {% if user.is_authenticated %}
+  <script>
+    // Find out the cart items from localStorage
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+  } else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+  }
+ document.getElementById('cart').innerHTML= Object.keys(cart).length
+</script>
+{% endif %}
+</body>
+</html>
