@@ -178,18 +178,6 @@ def checkout(request):
         city = request.POST.get('city', '')
         state = request.POST.get('state', '')
         zip_code = request.POST.get('zip_code', '')
-        # esewa = request.POST.get('selector', '')
-        # cash = request.POST.get('selector1', '')
-        # if cash == "on" and esewa =="on":
-        #     messages.warning(request, "Please select only one payment method")
-        #     return redirect("/Checkout")
-        # elif esewa == "on":
-        #     order = Order(items_json=items_json, name=name, email=email, phone=phone, address=address, address2=address2, city=city, state=state, zip_code=zip_code, amount=amount, payment="esewa")
-        # elif cash == "on":
-        #     order = Order(items_json=items_json, name=name, email=email, phone=phone, address=address, address2=address2, city=city, state=state, zip_code=zip_code, amount=amount, payment="cash on delivery")
-        # else:
-        #     messages.error(request, "Some error occured. Please Check one of the payment method co checkout")
-        #     return redirect("/Checkout")
         order = Order(items_json=items_json, name=name, email=email, phone=phone, address=address, address2=address2, city=city, state=state, zip_code=zip_code, amount=amount, payment="esewa")
         order.save()
         update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed")
@@ -257,6 +245,11 @@ def postComment(request):
     else:
         return HttpResponse('404-page not found')
     return redirect(f"/{post_id}")
+
+
+def handlePayment(request):
+    # Handle your payment here
+    pass
 
 
 def nopage(request, nopage):
