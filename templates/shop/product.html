@@ -2,6 +2,8 @@
 {% block title %}{{post.product_name}}{% endblock title %}
 {% block body %}
 {% load static %}
+{% load humanize %} 
+{% load extras %}
 
 
 
@@ -57,7 +59,7 @@
 			</li>
 			<li class="nav-item">
 				<a class="nav-link active" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
-					aria-controls="contact" aria-selected="false">Comments & Reviews</a>
+					aria-controls="contact" aria-selected="false">Comments & Reviews({{comments.count}})</a>
 			</li>
 		</ul>
 		<div class="tab-content" id="myTabContent">
@@ -68,90 +70,102 @@
 				<div class="row">
 					<div class="col-lg-6">
 						<div class="comment_list">
-							<div class="review_item">
-								<div class="media">
-									<div class="d-flex">
-										<img src="{% static 'home/img/product/review-1.png' %}" alt="">
+							{% for comment in comments %}
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img width="50" src="{% static 'home/img/user.png' %}"</img>
+										</div>
+										<div class="media-body">
+											<h4>{{comment.user.first_name}} {{comment.user.last_name}}</h4>
+											<h5>{{comment.timestamp | naturaltime}}</h5>
+											<a class="reply_btn" data-toggle="collapse" href="#reply_colapse{{comment.sno}}" role="button" aria-expanded="false" aria-controls="reply_colapse{{comment.sno}}">Reply</a>
+										</div>
 									</div>
-									<div class="media-body">
-										<h4>Blake Ruiz</h4>
-										<h5>12th Feb, 2018 at 05:56 pm</h5>
-										<a class="reply_btn" href="#">Reply</a>
+									<div class="container mt-3">
+									<p class="ml-3 text-dark bg-light">{{comment.comment}}</p>
+									</div>
+									
+								</div>
+
+								<!--================== Reply Colapse ==================-->
+
+									
+								<div class="collapse  mb-4 ml-3" id="reply_colapse{{comment.sno}}">
+									<div class="card-body p-0">
+									<!--============= Colapse Body =============-->
+										<form class="row contact_form" action="/postComment" method="post" id="contactForm">
+											{% csrf_token %}
+											<div class="col-md-12">
+												<div class="form-group">
+													<input type="hidden" name="post_id" value="{{id}}">
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<textarea class="form-control" name="comment" id="comment" rows="7"
+														placeholder="Enter reply here"></textarea>
+													<input type="hidden" name="parentsno" value="{{comment.sno}}">
+												</div>
+											</div>
+											<div class="col-md-12 text-right">
+												{% if user.is_authenticated %}
+												<button type="submit" value="submit" class="btn primary-btn">Reply</button>
+												{% else %}
+												<button type="submit" value="submit" class="btn primary-btn" disabled>Sign in to reply</button>
+												{% endif %}
+											</div>
+										</form>
 									</div>
 								</div>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-									incididunt ut labore et
-									dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-									laboris nisi ut aliquip ex ea
-									commodo</p>
-							</div>
-							<div class="review_item reply">
-								<div class="media">
-									<div class="d-flex">
-										<img src="{% static 'home/img/product/review-2.png' %}" alt="">
+								{% for items in repDict|get_val:comment.sno %}
+									<div class="container mx-4 p-0">
+										<div class="review_item mb-4">
+											<div class="media">
+												<div class="d-flex">
+													<img width="40" src="{% static 'home/img/user.png' %}"</img>
+												</div>
+												<div class="media-body">
+													<h4>{{items.user.first_name}} {{items.user.last_name}}</h4>
+													<h5>{{items.timestamp | naturaltime}}</h5>
+												</div>
+											</div>
+											<div class="container mt-3">
+											<p class="ml-3 text-dark bg-light">{{items.comment}}</p>
+											</div>
+								
+										</div>
 									</div>
-									<div class="media-body">
-										<h4>Blake Ruiz</h4>
-										<h5>12th Feb, 2018 at 05:56 pm</h5>
-										<a class="reply_btn" href="#">Reply</a>
-									</div>
-								</div>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-									incididunt ut labore et
-									dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-									laboris nisi ut aliquip ex ea
-									commodo</p>
-							</div>
-							<div class="review_item">
-								<div class="media">
-									<div class="d-flex">
-										<img src="{% static 'home/img/product/review-3.png' %}" alt="">
-									</div>
-									<div class="media-body">
-										<h4>Blake Ruiz</h4>
-										<h5>12th Feb, 2018 at 05:56 pm</h5>
-										<a class="reply_btn" href="#">Reply</a>
-									</div>
-								</div>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-									incididunt ut labore et
-									dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-									laboris nisi ut aliquip ex ea
-									commodo</p>
-							</div>
+								{% endfor %}
+								<hr>
+
+								<!--================== Reply Colapse ==================-->
+							{% endfor %}
 						</div>
 					</div>
 					<div class="col-lg-6">
 						<div class="review_box">
 							<h4>Post a comment or review</h4>
-							<form class="row contact_form" action="contact_process.php" method="post" id="contactForm"
-								novalidate="novalidate">
+							<form class="row contact_form" action="/postComment" method="post" id="contactForm">
+							{% csrf_token %}
 								<div class="col-md-12">
 									<div class="form-group">
-										<input type="text" class="form-control" id="name" name="name"
-											placeholder="Your Full name">
+										<input type="hidden" name="post_id" value="{{id}}">
+										<input type="hidden" name="parentsno" value="">
 									</div>
 								</div>
 								<div class="col-md-12">
 									<div class="form-group">
-										<input type="email" class="form-control" id="email" name="email"
-											placeholder="Email Address">
-									</div>
-								</div>
-								<div class="col-md-12">
-									<div class="form-group">
-										<input type="text" class="form-control" id="number" name="number"
-											placeholder="Phone Number">
-									</div>
-								</div>
-								<div class="col-md-12">
-									<div class="form-group">
-										<textarea class="form-control" name="message" id="message" rows="7"
-											placeholder="Message"></textarea>
+										<textarea class="form-control" name="comment" id="comment" rows="7"
+											placeholder="Enter comment here"></textarea>
 									</div>
 								</div>
 								<div class="col-md-12 text-right">
-									<button type="submit" value="submit" class="btn primary-btn">Submit Now</button>
+									{% if user.is_authenticated %}
+									<button type="submit" value="submit" class="btn primary-btn">Comment</button>
+									{% else %}
+									<button type="submit" value="submit" class="btn primary-btn" disabled>Sign in to comment</button>
+									{% endif %}
 								</div>
 							</form>
 						</div>

@@ -1,8 +1,9 @@
-from django.shortcuts import render, HttpResponse,redirect
+from home.models import Contact, Product, Order, OrderUpdate, PostComment
 from django.contrib.auth import logout, login, authenticate
+from django.shortcuts import render, HttpResponse,redirect
 from django.contrib.auth.models import User
+from home.templatetags import extras
 from django.contrib import messages
-from home.models import Contact, Product, Order, OrderUpdate
 from math import ceil
 import json
 
@@ -49,12 +50,14 @@ def handleSignup(request):
             for characters in pass1:
                 if characters in special_chars:
                     count = count + 1
-            if characters.isupper():
-                upper = upper + 1
+                if characters.isupper()==True:
+                    upper = upper + 1
             if upper == 0:
                 messages.warning(request, 'At least one character in passsword must be in Uppercase')
+                return redirect('/signup')
             if count == 0:
                 messages.warning(request, 'Your password most be with special characters')
+                return redirect('/signup')
             # ----------------Check if the user already exist----------------------------#
             try:
                 # ----------------Try creating the user----------------------------#
@@ -70,7 +73,7 @@ def handleSignup(request):
             
         else:
             messages.error(request, 'Passwords do not match')
-            return redirect('/')
+            return redirect('/signup')
 
     return render(request, 'shop/signup.html')
 
@@ -86,7 +89,7 @@ def handleLogin(request):
             return redirect( '/')
         else:
             messages.error(request, 'Invalid credencials.Please try again')
-            return redirect( '/')
+            return redirect( '/login')
     return render(request, 'shop/login.html')
 
 
@@ -96,13 +99,10 @@ def handleLogout(request):
 
 
 def searchMatch(query, item):
-    print(query, item)
     ''' Return true only if query matches the item '''
     if query in item.description.lower() or query in item.product_name.lower() or query in item.category.lower() or query in item.subcategory.lower():
-        print('true')
         return True
     else:
-        print('false')
         return False
 
 
@@ -144,9 +144,20 @@ def about(request):
 
 def prodView(request, product_id):
     post = Product.objects.filter(product_id=product_id).first()
+    comments = PostComment.objects.filter(post=post, parent=None)
+    replies = PostComment.objects.filter(post=post).exclude(parent=None)
+    repDict = {}
+    for reply in replies:
+        if reply.parent.sno not in repDict.keys():
+            repDict[reply.parent.sno] = [reply]
+        else:
+            repDict[reply.parent.sno].append(reply)
     context = {
         'post':post,
-        "category":post.category
+        "category":post.category,
+        "id":product_id,
+        "comments": comments,
+        'repDict':repDict,
     }
     return render(request, 'shop/product.html', context)
 
@@ -220,13 +231,32 @@ def tracker(request):
 
 
                 }
-                print('came')
                 return render(request, 'shop/details.html', context)
             else:
                 return HttpResponse('{"status": "noitem"}')
         except Exception as e:
-            print(e)
             return HttpResponse('{"status": "error"}')
+
+
+def postComment(request):
+    if request.method == "POST":
+        comment = request.POST.get("comment")
+        user =  request.user
+        post_id =  request.POST.get("post_id")
+        product = Product.objects.get(product_id=post_id)
+        parentsno = request.POST.get('parentsno')
+        if parentsno =="":
+            comment = PostComment(comment=comment, user=user, post=product)
+            messages.success(request, 'Successfully Commented')
+        else:
+            parent  = PostComment.objects.get(sno=parentsno)
+            comment = PostComment(comment=comment, user=user, post=product, parent=parent)
+            messages.success(request, 'Successfully Replied')
+        comment.save()
+        return  redirect(f"/{post_id}")
+    else:
+        return HttpResponse('404-page not found')
+    return redirect(f"/{post_id}")
 
 
 def nopage(request, nopage):

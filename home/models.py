@@ -29,16 +29,9 @@ class Contact(models.Model):
     def __str__(self):
         return f'{self.name} by {self.email}'
 
-# import uuid
-# from django.db import models
-
-# class MyUUIDModel(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     # other fields
-
 
 class Order(models.Model):
-    order_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    order_id = models.AutoField(primary_key=True)
     items_json = models.CharField(max_length=5000)
     name = models.CharField(max_length=70, default="")
     phone = models.CharField(max_length=14)
@@ -58,7 +51,7 @@ class Order(models.Model):
 
 class OrderUpdate(models.Model):
     update_id  = models.AutoField(primary_key=True)
-    order_id = models.IntegerField(default="")
+    order_id = models.CharField(default="", max_length=100)
     update_desc = models.CharField(max_length=5000)
     timestamp = models.DateField(auto_now_add=True)
 
